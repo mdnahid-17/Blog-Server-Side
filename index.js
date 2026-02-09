@@ -119,19 +119,20 @@ async function run() {
       const filter = req.query.filter;
       const search = req.query.search;
       const size = parseInt(req.query.size);
-      const page = parseInt(req.query.page) - 1;
-      // console.log(size, page);
+      const page = parseInt(req.query.page);
+      console.log(size, page);
       let query = {
         title: { $regex: search, $options: "i" },
       };
       if (filter) query.category = filter;
       let options = {};
+      const count = await blogsCollection.countDocuments(query);
       const result = await blogsCollection
         .find(query, options)
         .skip(page * size)
         .limit(size)
         .toArray();
-      res.send(result);
+      res.send(result,count);
     });
     // Get all jobs data count from db
     app.get("/blogs-count", async (req, res) => {
